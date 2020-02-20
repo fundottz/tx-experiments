@@ -4,11 +4,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.junit.jupiter.SpringExtension
-import org.springframework.test.context.junit4.SpringRunner
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -17,11 +15,11 @@ import java.util.*
 
 @Testcontainers
 @ExtendWith(SpringExtension::class)
-@SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 class TransactionalServiceTest {
 
-//    @Autowired
-//    lateinit var quoteRepository: QuoteRepository
+    @Autowired
+    lateinit var quoteRepository: QuoteRepository
 
     @Autowired
     lateinit var transactionalService: TransactionalService
@@ -32,17 +30,16 @@ class TransactionalServiceTest {
                     .withExposedPorts(27017)
 
     @BeforeEach
-    fun `should check that database is empty`(){
-//        assertThat(quoteRepository.count()).isEqualTo(0)
+    fun `database should be ready and empty`(){
+        assertThat(quoteRepository.count()).isEqualTo(0)
+        assertThat(mongo.isRunning).isTrue()
     }
 
     @Test
-    fun `should save transactionally two documents in different databases`() {
-        assertThat(mongo.isRunning).isTrue()
-
+    fun `should rollback saving document when inside transaction appears exception`() {
         val doc1 = Quote(UUID.randomUUID().toString(), "GAZP", BigDecimal.valueOf(1))
         transactionalService.save(doc1)
 
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        assertThat(quoteRepository.count()).isEqualTo(0)
     }
 }

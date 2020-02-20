@@ -2,10 +2,10 @@ package com.example.txmongo
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
+import org.springframework.transaction.annotation.EnableTransactionManagement
 
 @SpringBootApplication
-@EnableMongoRepositories
+@EnableTransactionManagement
 class TxmongoApplication
 
 fun main(args: Array<String>) {
