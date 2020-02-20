@@ -30,14 +30,18 @@ class TransactionalServiceTest {
                     .withExposedPorts(27017)
 
     @BeforeEach
-    fun `database should be ready and empty`(){
+    fun `database should be ready and empty`() {
         assertThat(quoteRepository.count()).isEqualTo(0)
         assertThat(mongo.isRunning).isTrue()
     }
 
     @Test
     fun `should rollback saving document when inside transaction appears exception`() {
-        val doc1 = Quote(UUID.randomUUID().toString(), "GAZP", BigDecimal.valueOf(1))
+        val doc1 = Quote(
+                id = UUID.randomUUID().toString(),
+                instrument = "GAZP",
+                bid = BigDecimal.valueOf(1)
+        )
         transactionalService.save(doc1)
 
         assertThat(quoteRepository.count()).isEqualTo(0)
